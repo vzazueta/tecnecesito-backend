@@ -53,6 +53,22 @@ app.get("/cliente", async (req, res, next) => {
   }
 });
 
+app.put("/cliente", async (req, res, next) => {
+  try {
+    let cliente = await query(
+      `UPDATE \`cliente\` SET \`nombre\` = IFNULL('${req.body.nombre}', \`nombre\`), \`correo\` = IFNULL('${req.body.correo}', \`correo\`), \`contrasena\` = IFNULL('${req.body.contrasena}', \`contrasena\`), \`telefono\` = IFNULL('${req.body.telefono}', \`telefono\`) WHERE (\`correo\` = '${req.body.correo}')`
+    );
+    return res.status(200).json({
+      cliente: cliente,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      error: error
+    });
+  }
+});
+
 app.delete("/cliente", async (req, res, next) => {
   try {
     let cliente = await query(`DELETE FROM \`cliente\` WHERE (\`correo\` = '${req.body.correo}')`);
