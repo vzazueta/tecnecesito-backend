@@ -25,10 +25,12 @@ app.get("/", (req, res, next) => {
 
 app.post("/cliente", async (req, res, next) => {
   try {
-    await query(
+    let cliente = await query(
       `INSERT INTO \`cliente\` (\`nombre\`, \`correo\`, \`contrasena\`, \`telefono\`) VALUES ('${req.body.nombre}', '${req.body.correo}', '${req.body.contrasena}', '${req.body.telefono}')`
     );
-    return res.status(200);
+    return res.status(200).json({
+      cliente: cliente,
+    });
   } catch (error) {
     console.log(error);
     return res.status(400).json({
@@ -39,10 +41,23 @@ app.post("/cliente", async (req, res, next) => {
 
 app.get("/cliente", async (req, res, next) => {
   try {
-    let cliente = await query(`SELECT * FROM  \`cliente\``);
-    //let cliente = await query(`SELECT * FROM  \`cliente\` WHERE (\`correo\` = '${req.body.correo}')`);
+    let cliente = await query(`SELECT * FROM  \`cliente\` WHERE (\`correo\` = '${req.body.correo}')`);
     return res.status(200).json({
-      clientes: cliente,
+      cliente: cliente,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      error: error
+    });
+  }
+});
+
+app.delete("/cliente", async (req, res, next) => {
+  try {
+    let cliente = await query(`DELETE FROM \`cliente\` WHERE (\`correo\` = '${req.body.correo}')`);
+    return res.status(200).json({
+      cliente: cliente,
     });
   } catch (error) {
     console.log(error);
