@@ -100,7 +100,7 @@ app.delete("/cliente", async (req, res, next) => {
 app.post("/profesionista", async (req, res, next) => {
   try {
     let profesionista = await query(
-      `INSERT INTO \`profesionista\` (\`nombre\`, \`correo\`, \`contrasena\`, \`ubicacion\`, \`modalidad\`, \`telefono\`, \`categoria\`) VALUES ('${req.body.nombre}', '${req.body.correo}', '${req.body.contrasena}', '${req.body.ubicacion}', '${req.body.modalidad}', '${req.body.telefono}', '${req.body.categoria}')`
+      `INSERT INTO \`profesionista\` (\`nombre\`, \`correo\`, \`contrasena\`, \`ubicacion\`, \`modalidad\`, \`telefono\`, \`categoria_nombre\`) VALUES ('${req.body.nombre}', '${req.body.correo}', '${req.body.contrasena}', '${req.body.ubicacion}', '${req.body.modalidad}', '${req.body.telefono}', '${req.body.categoria_nombre}')`
     );
     return res.status(200).json({
       profesionista: profesionista,
@@ -201,13 +201,47 @@ app.delete("/categoria", async (req, res, next) => {
   }
 });
 
+
+// FAVORITO
+
+
 app.post("/favorito", async (req, res, next) => {
   try {
     let favorito = await query(
-      `INSERT INTO \`favorito\` (\`correo\`) VALUES ('${req.body.nombre}')`
+      `INSERT INTO \`favorito\` (\`cliente_correo\`, \`profesionista_correo\`) VALUES ('${req.body.cliente_correo}','${req.body.profesionista_correo}')`
     );
     return res.status(200).json({
       favorito: favorito,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      error: error
+    });
+  }
+});
+
+app.get("/favorito", async (req, res, next) => {
+  try {
+    let favoritos = await query(
+      `SELECT \`profesionista.nombre\` FROM \`profesionista\` LEFT JOIN \`favorito\` on \`profesionista.correo\` = \`favorito.profesionista_correo\` WHERE \`favorito.cliente_correo\` = '${req.body.cliente_correo}'`
+      );
+    return res.status(200).json({
+      favoritos: favoritos,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      error: error
+    });
+  }
+});
+
+app.delete("/favorito", async (req, res, next) => {
+  try {
+    let cliente = await query(`DELETE FROM \`favorito\` WHERE (\`cliente_correo\` = '${req.body.cliente_correo}')`);
+    return res.status(200).json({
+      cliente: cliente,
     });
   } catch (error) {
     console.log(error);
